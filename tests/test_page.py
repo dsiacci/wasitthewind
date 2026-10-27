@@ -24,6 +24,8 @@ def test_result_page_renders_without_network(tmp_path):
 
 def test_verdict_words():
     assert page.verdict_words(10, -5, 20, 3600)[0] == "calm"
+    kind, head, sentence = page.verdict_words(10, -20, 300, 3600)
+    assert kind == "unsure" and "5:00 ahead" in sentence and "barely" not in sentence
     kind, head, _ = page.verdict_words(120, 60, 200, 3600)
     assert kind == "cost" and "2:00" in head
     kind, head, _ = page.verdict_words(-90, -150, -40, 3600)

@@ -159,6 +159,12 @@ def verdict_words(gap_s: float, lo_s: float, hi_s: float, ride_s: float) -> tupl
     if abs(gap_s) < small and lo_s < small and hi_s > -small:
         where = ("level with you" if abs(gap_s) < 1 else
                  f"{mmss(abs(gap_s))} {'ahead of' if gap_s > 0 else 'behind'} you")
+        if max(abs(lo_s), abs(hi_s)) > 3 * small:
+            def side(x):
+                return "level" if abs(x) < 1 else f"{mmss(abs(x))} {'ahead' if x > 0 else 'behind'}"
+            return "unsure", "Hard to say", (f"Your ghost, same legs and no wind, finishes {where}, but other ways of "
+                                             f"counting put it anywhere from {side(lo_s)} to {side(hi_s)}: on this "
+                                             "ride the wind may have counted more than the headline says.")
         return "calm", "It wasn't the wind", (f"Your ghost, same legs and no wind, finishes {where}, and every other "
                                               f"way of counting within {mmss(max(abs(lo_s), abs(hi_s)))}: "
                                               "the wind barely touched this ride.")

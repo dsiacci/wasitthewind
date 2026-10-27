@@ -304,7 +304,7 @@ def tile(meta: dict, settings: Settings) -> str:
     if st == "done":
         r = meta["result"]
         kind, _, _ = verdict_words(r["gap_s"], r["lo_s"], r["hi_s"], r["rider_s"])
-        title = {"calm": "Not the wind", "cost": f"Wind cost <b>{mmss(r['gap_s'])}</b>",
+        title = {"calm": "Not the wind", "unsure": "Hard to say", "cost": f"Wind cost <b>{mmss(r['gap_s'])}</b>",
                  "gave": f"Wind gave <b>{mmss(-r['gap_s'])}</b>"}[kind]
         sub = f"{hm(r['rider_s'])} moving · ghost {hm(r['ghost_s'])} · range {mmss(r['lo_s'], True)} to {mmss(r['hi_s'], True)}"
     elif st == "failed":
