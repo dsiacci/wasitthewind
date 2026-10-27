@@ -37,7 +37,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from wasitthewind import wind  # noqa: E402
-from wasitthewind.analysis import physics_speeds  # noqa: E402
+from wasitthewind.analysis import fitted_rider, physics_speeds  # noqa: E402
 from wasitthewind.ghost import ghost_rows  # noqa: E402
 from wasitthewind.ride import CHUNK_S, RideSeries, chunks  # noqa: E402
 
@@ -120,7 +120,7 @@ def main(argv=None) -> int:
     val = json.loads(args.validate.read_text()) if args.validate else None
     rider = None
     if os.environ.get("WASITTHEWIND_RIDER_KG"):
-        from wasitthewind.physics import Bike, Rider, air_density, fit_drag_and_rolling
+        from wasitthewind.physics import Bike, Rider
 
         rider = Rider(mass_kg=float(os.environ["WASITTHEWIND_RIDER_KG"]), bike=Bike(mass_kg=11.5))
     rides = {}
@@ -133,14 +133,7 @@ def main(argv=None) -> int:
         rides[rs.name] = (rs, tr["lat"], tr["lon"])
         all_ch[rs.name] = chunks(rs)
     if rider is not None:
-        c = {k: np.concatenate([x[k] for x in all_ch.values()]) for k in next(iter(all_ch.values()))}
-        sel = (c["full"] & (c["power"] > 50) & (c["speed"] > 3) & (c["grade"] > -0.03) & (c["grade"] < 0.08)
-               & (c["heading_change"] < 30))
-        crr, cda, _ = fit_drag_and_rolling(c["power"][sel], c["speed"][sel], c["grade"][sel], rider,
-                                           args.factor * c[f"head10__{MODEL}"][sel],
-                                           air_density(c["temp"][sel], c["elev"][sel]),
-                                           rider.system_mass_kg * c["dv2"][sel] / 60.0)
-        rider = rider.with_fit(crr, cda)  # stays in memory
+        rider = fitted_rider(rider, list(all_ch.values()), MODEL, args.factor)  # stays in memory
     res = {}
     for name, (rs, lat, lon) in rides.items():
         ch = all_ch[name]

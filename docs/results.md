@@ -135,16 +135,16 @@ as a share of the ghost's time; positive: the wind cost time):
 | Ride | Wind | Physics, 0.54 | All wind to zero (first version) | Crosswind to zero | Headwind to zero | Model without crosswind, headwind to zero | **Headwind turned around** |
 |---|---|---|---|---|---|---|---|
 | 14 Aug | 0.6 m/s | −0.06 % | −3.28 % | −3.05 % | −0.68 % | −0.47 % | **+0.35 %** |
-| 16 Aug | 0.4 m/s | −0.09 % | −1.52 % | −1.49 % | −0.00 % | −0.04 % | **−0.02 %** |
-| 19 Aug | 2.7 m/s | −1.88 % | −8.63 % | −3.76 % | −4.13 % | −4.39 % | **−0.96 %** |
-| 24 Aug | 0.9 m/s | +0.35 % | −2.97 % | −2.69 % | −0.13 % | −0.07 % | **+0.00 %** |
-| 29 Aug | 2.0 m/s | +0.71 % | −7.11 % | −6.10 % | −2.38 % | −1.65 % | **+0.03 %** |
-| 31 Aug | 0.9 m/s | +0.15 % | −3.37 % | −3.29 % | −0.36 % | −0.14 % | **+0.02 %** |
-| 13 Sep | 1.1 m/s | +0.13 % | −4.20 % | −3.09 % | −0.68 % | −0.58 % | **+0.09 %** |
-| 20 Sep | 0.8 m/s | +0.15 % | −3.51 % | −3.09 % | −0.25 % | +0.10 % | **−0.10 %** |
-| 27 Sep | 1.4 m/s | +0.29 % | −4.27 % | −4.77 % | +0.74 % | +0.61 % | **+0.33 %** |
+| 16 Aug | 0.4 m/s | −0.10 % | −1.52 % | −1.49 % | −0.00 % | −0.04 % | **−0.02 %** |
+| 19 Aug | 2.7 m/s | −1.60 % | −8.63 % | −3.76 % | −4.13 % | −4.39 % | **−0.96 %** |
+| 24 Aug | 0.9 m/s | +0.30 % | −2.97 % | −2.69 % | −0.13 % | −0.07 % | **+0.00 %** |
+| 29 Aug | 2.0 m/s | +0.63 % | −7.11 % | −6.10 % | −2.38 % | −1.65 % | **+0.03 %** |
+| 31 Aug | 0.9 m/s | +0.14 % | −3.37 % | −3.29 % | −0.36 % | −0.14 % | **+0.02 %** |
+| 13 Sep | 1.1 m/s | +0.11 % | −4.20 % | −3.09 % | −0.68 % | −0.58 % | **+0.09 %** |
+| 20 Sep | 0.8 m/s | +0.13 % | −3.51 % | −3.09 % | −0.25 % | +0.10 % | **−0.10 %** |
+| 27 Sep | 1.4 m/s | +0.26 % | −4.27 % | −4.77 % | +0.74 % | +0.61 % | **+0.33 %** |
 | 4 Oct | 1.6 m/s | +0.19 % | −3.57 % | −3.46 % | −0.57 % | +0.14 % | **−0.07 %** |
-| *Mean distance to the physics* | | | *4.2 points* | *3.5* | *0.9* | *0.7* | ***0.3*** |
+| *Mean distance to the physics* | | | *4.2 points* | *3.5* | *1.0* | *0.7* | ***0.3*** |
 
 Zeroing the crosswind did most of the damage. Dropping the crosswind from the
 model was not enough: a headwind of zero still meant "calm day" (29 August:
@@ -157,28 +157,29 @@ the wind did by blowing one way rather than the other. On loops, that is a
 few seconds; on the one long ride with a tailwind (19 August), a minute or
 more.
 
-The physics column uses a textbook bike (drag area 0.40 m², rolling
-resistance 0.005) and the rider's mass; it is a cross-check, not the truth,
-but section 3 says its 0.54 share is about right.
+The physics column has its drag and rolling resistance fitted on the other
+rides' steady pieces (kept in memory, never printed) and the rider's mass;
+it is a cross-check, not the truth, but section 3 says its 0.54 share is
+about right.
 
 ### The ghost of every ride
 
 Each ride judged with TabPFN learned from the nine others, the headwind
-turned around, against the physics. Moving time; the gap is the rider's time
+turned around, against the physics (fitted on the nine others too). Moving time; the gap is the rider's time
 minus the ghost's (positive: the wind cost time; negative: it gave some).
 
 | Ride | Moving | Wind | **TabPFN, AROME** (headline) | TabPFN, IFS | Physics, AROME, 0.54 / 0.29 | Physics, IFS, 0.54 / 0.29 | Linear regression, AROME, same ghost | First ghost (TabPFN, wind to zero) |
 |---|---|---|---|---|---|---|---|---|
-| 14 Aug, inland | 88 min | 0.6 m/s | **+0:20** | −0:17 | −0:03 / −0:02 | −0:04 / −0:02 | +0:32 | −3:20 |
-| 16 Aug, inland | 110 min | 0.4 m/s | **−0:01** | −0:07 | −0:07 / −0:04 | −0:13 / −0:07 | +1:04 | −1:55 |
-| 19 Aug, the north, one way | 340 min | 2.7 m/s | **−3:34** | −1:05 | −7:05 / −3:52 | −2:16 / −1:18 | −0:36 | −34:53 |
-| 24 Aug, west coast | 63 min | 0.9 m/s | **+0:00** | −0:59 | +0:13 / +0:07 | +0:09 / +0:05 | +0:09 | −1:56 |
-| 29 Aug, west coast | 89 min | 2.0 m/s | **+0:02** | −0:11 | +0:39 / +0:21 | +0:08 / +0:04 | +4:52 | −7:05 |
-| 31 Aug, west coast | 62 min | 0.9 m/s | **+0:01** | −0:21 | +0:06 / +0:03 | +0:12 / +0:07 | +0:03 | −2:11 |
-| 13 Sep, the loop | 188 min | 1.1 m/s | **+0:10** | −0:33 | +0:15 / +0:07 | −1:23 / −0:45 | +0:41 | −8:30 |
-| 20 Sep, the loop | 180 min | 0.8 m/s | **−0:11** | −0:18 | +0:16 / +0:09 | −1:19 / −0:43 | +0:24 | −6:43 |
-| 27 Sep, the loop | 169 min | 1.4 m/s | **+0:35** | −0:34 | +0:30 / +0:16 | −0:36 / −0:20 | +0:08 | −7:55 |
-| 4 Oct, west coast | 191 min | 1.6 m/s | **−0:08** | −1:40 | +0:23 / +0:12 | +0:06 / +0:02 | +10:34 | −7:40 |
+| 14 Aug, inland | 88 min | 0.6 m/s | **+0:20** | −0:17 | −0:04 / −0:02 | −0:04 / −0:02 | +0:32 | −3:20 |
+| 16 Aug, inland | 110 min | 0.4 m/s | **−0:01** | −0:07 | −0:07 / −0:04 | −0:09 / −0:05 | +1:04 | −1:55 |
+| 19 Aug, the north, one way | 340 min | 2.7 m/s | **−3:34** | −1:05 | −6:00 / −3:20 | −1:48 / −1:04 | −0:36 | −34:53 |
+| 24 Aug, west coast | 63 min | 0.9 m/s | **+0:00** | −0:59 | +0:12 / +0:06 | +0:08 / +0:05 | +0:09 | −1:56 |
+| 29 Aug, west coast | 89 min | 2.0 m/s | **+0:02** | −0:11 | +0:35 / +0:19 | +0:13 / +0:06 | +4:52 | −7:05 |
+| 31 Aug, west coast | 62 min | 0.9 m/s | **+0:01** | −0:21 | +0:05 / +0:03 | +0:12 / +0:06 | +0:03 | −2:11 |
+| 13 Sep, the loop | 188 min | 1.1 m/s | **+0:10** | −0:33 | +0:12 / +0:06 | −1:12 / −0:39 | +0:41 | −8:30 |
+| 20 Sep, the loop | 180 min | 0.8 m/s | **−0:11** | −0:18 | +0:14 / +0:07 | −1:10 / −0:39 | +0:24 | −6:43 |
+| 27 Sep, the loop | 169 min | 1.4 m/s | **+0:35** | −0:34 | +0:27 / +0:14 | −0:33 / −0:19 | +0:08 | −7:55 |
+| 4 Oct, west coast | 191 min | 1.6 m/s | **−0:08** | −1:40 | +0:24 / +0:12 | +0:09 / +0:04 | +10:34 | −7:40 |
 
 **On these rides, it wasn't the wind.** They were mostly dawn rides in light
 wind (0.4 to 2 m/s at 10 m on average), and on a loop what the wind takes on
@@ -186,11 +187,11 @@ the way out it mostly gives back on the way home: on every loop, the AROME
 lines (TabPFN and physics) stay within 40 seconds, and every line within
 1:40. The one
 exception is the long one-way day in the north (19 August), with the wind
-mostly at the back: it gave between 1 and 7 minutes, depending on the
+mostly at the back: it gave between 1 and 6 minutes, depending on the
 weather model and on how much of it reached the rider.
 
 TabPFN and the physics agree on the loops. On the one-way day, TabPFN's
-ghost (−3:34) sits with the physics at 0.29 (−3:52), half the 0.54 one; with
+ghost (−3:34) sits with the physics at 0.29 (−3:20), not the 0.54 one (−6:00); with
 section 3, this says TabPFN's headwind effect is on the weak side. The IFS
 lines lean towards "the wind helped" on several loops where AROME and the
 physics see nothing: IFS gets the direction wrong by 48° on average
@@ -205,7 +206,7 @@ stay in the range; the headline is AROME.
   a small CPU. That is what the ghost's legs are made of.
 - **As a ghost: better than a line.** The same ghost made with the linear
   regression strays far from the physics on two rides (+4:52 on 29 August,
-  +10:34 on 4 October, where the physics says +0:39 and +0:23): 1.4 points
+  +10:34 on 4 October, where the physics says +0:35 and +0:24): 1.4 points
   from the physics on average, against 0.3 for TabPFN.
 - **As a judge of the wind: not on its own.** Its first ghost was fooled by
   what the wind says about the kind of day, and said so with confidence on

@@ -7,7 +7,8 @@ Input: prepared series (``wasitthewind prepare``), no positions, no mass.
    linear regression with and without them, a constant.
 2. The ghost of every ride, learned from the other rides only, for each
    weather model; with the rider's mass in WASITTHEWIND_RIDER_KG, the
-   physics ghosts too (a textbook bike, 0.54 and 0.29 of the 10 m wind).
+   physics ghosts too (drag and rolling fitted on the other rides' steady
+   pieces, 0.54 and 0.29 of the 10 m wind).
 
 Writes a JSON file with times in seconds and speeds in m/s: no watts.
 
@@ -29,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from wasitthewind import ghost as ghostmod  # noqa: E402
 from wasitthewind import models, wind  # noqa: E402
-from wasitthewind.analysis import physics_speeds, tabpfn_speeds  # noqa: E402
+from wasitthewind.analysis import fitted_rider, physics_speeds, tabpfn_speeds  # noqa: E402
 from wasitthewind.physics import Bike, Rider  # noqa: E402
 from wasitthewind.ride import RideSeries, chunks  # noqa: E402
 
@@ -97,8 +98,9 @@ def main(argv=None) -> int:
             print(f"{r.name} {wm:28s} gap {g.gap_s:+6.0f} s ({g.gap_pct:+.1f} %)  wind {entry['ghost'][wm]['mean_wind10']:.1f} m/s",
                   flush=True)
             if rider is not None:
+                fitted = fitted_rider(rider, others)
                 for k in (wind.rider_height_factor(z0_m=0.1), wind.rider_height_factor(z0_m=0.5)):
-                    a, b = physics_speeds(c, rider, wm, k)
+                    a, b = physics_speeds(c, fitted, wm, k)
                     pg = ghostmod.replay(c, a, b, wm)
                     entry["ghost"][wm][f"physics_{k:.2f}"] = {"gap_s": pg.gap_s, "gap_pct": pg.gap_pct}
         out["rides"][r.name] = entry

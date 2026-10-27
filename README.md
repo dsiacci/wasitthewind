@@ -43,8 +43,9 @@ with no training run.
 **The range.** What is uncertain becomes lines of the range: the other weather
 model, and plain physics instead of TabPFN, with the share of the 10 m wind
 that reaches a rider 1.2 m above the road (0.54 in open country, 0.29 among
-trees and houses: a log wind profile). The physics needs your mass; it is read
-from the environment and never stored or printed.
+trees and houses: a log wind profile). The physics fits your drag and rolling
+resistance on the steady pieces of your other rides, and needs your mass; it
+is read from the environment and never stored or printed.
 
 ## Usage
 
@@ -106,7 +107,7 @@ On one rider's ten outdoor rides with a power meter (Corsica, August to
 October 2026, 24.7 hours), each judged with TabPFN learned from the nine
 others: **it wasn't the wind.** On every loop, the headline ghost finishes
 within 40 seconds of the rider; only the long one-way day with the wind at
-the back moved by minutes (1 to 7, depending on the line of the range).
+the back moved by minutes (1 to 6, depending on the line of the range).
 
 - The rebuilt wind (AROME) gets the direction within 25° but is a third too
   weak against the stations; ECMWF IFS is worse.

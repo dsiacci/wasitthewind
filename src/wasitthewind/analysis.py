@@ -84,6 +84,33 @@ def tabpfn_speeds(chunk: dict, context: list[dict], wind_model: str, make=None, 
     return vw, 0.5 * (vw + vt)
 
 
+def fitted_rider(rider, context: list[dict], wind_model: str = HEADLINE_MODEL, factor: float | None = None):
+    """The rider with drag and rolling resistance fitted on the steady pieces of the other rides.
+
+    Steady: full 30-second pieces, pedalling, above 3 m/s, grade between −3 and
+    8 %, heading within 30°. The fit stays in memory (printed next to a speed,
+    it would give the mass back). Too few pieces, or values out of reason: the
+    rider as given.
+    """
+    from .physics import air_density, fit_drag_and_rolling
+
+    if not context:
+        return rider
+    factor = wind.rider_height_factor() if factor is None else factor
+    c = {k: np.concatenate([x[k] for x in context]) for k in context[0]}
+    sel = (c["full"] & (c["power"] > 50) & (c["speed"] > 3) & (c["grade"] > -0.03) & (c["grade"] < 0.08)
+           & (c["heading_change"] < 30))
+    if sel.sum() < 50:
+        return rider
+    crr, cda, _ = fit_drag_and_rolling(c["power"][sel], c["speed"][sel], c["grade"][sel], rider,
+                                       factor * c[f"head10__{wind_model}"][sel],
+                                       air_density(c["temp"][sel], c["elev"][sel]),
+                                       rider.system_mass_kg * c["dv2"][sel] / 60.0)
+    if not (0.001 < crr < 0.02 and 0.15 < cda < 0.8):
+        return rider
+    return rider.with_fit(crr, cda)
+
+
 def physics_speeds(chunk: dict, rider, wind_model: str, factor: float, rho=None):
     """The same two predictions from the physics (a fitted rider: see `physics.fit_drag_and_rolling`)."""
     from .physics import air_density, speed_at_power
@@ -114,6 +141,7 @@ def judge(rs: RideSeries, context: list[RideSeries], make=None, rider=None, heig
                 a, b = tabpfn_speeds(ch, ctx, m, make)
                 v.variants[f"TabPFN, {m}"] = ghostmod.replay(ch, a, b, m).gap_s
         if rider is not None:
+            rider = fitted_rider(rider, ctx)
             factors = height_factors or [wind.rider_height_factor(z0_m=z) for z in ROUGHNESS_M]
             for m in rs.models:
                 for k in factors:
