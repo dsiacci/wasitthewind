@@ -1,9 +1,10 @@
 """How good is the rebuilt wind? The model lattice against stations and METAR, at the hours of the rides.
 
-For every outdoor ride in a folder, the lattice that covers it is loaded (the
-same one the analysis uses), then interpolated at every measuring station
-inside it, at every hour from one hour before the start to one hour after
-the end. Only times, station names and wind figures are printed: nothing
+For every outdoor ride in a folder, the lattice that covers it and the
+measuring stations within `--near-km` of the track is loaded (the analysis
+asks for the same blocks, without the stations), then interpolated at every
+station, at every hour from one hour before the start to one hour after the
+end. Only times, station names and wind figures are printed: nothing
 about where the ride went.
 
     python tools/wind_check.py RIDES_DIR --meteofrance H_20_latest-2025-2026.csv.gz \
@@ -23,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from wasitthewind import stations, wind  # noqa: E402
 from wasitthewind.fitfile import read_fit  # noqa: E402
+from wasitthewind.geo import haversine_m  # noqa: E402
 
 CALM_MS = 2.0  # directions are only compared above this measured speed
 
@@ -70,6 +72,7 @@ def main(argv=None) -> int:
     ap.add_argument("--cache", type=Path, default=Path("weather-cache"))
     ap.add_argument("--metar", action="append", default=[], help="ICAO:lat:lon of an airport (repeatable)")
     ap.add_argument("--models", default=",".join(wind.MODELS))
+    ap.add_argument("--near-km", type=float, default=15.0, help="stations this close to the track are checked")
     ap.add_argument("--markdown", type=Path)
     args = ap.parse_args(argv)
 
@@ -87,18 +90,29 @@ def main(argv=None) -> int:
         if ride.is_virtual or not ride.has_power:
             continue
         end = ride.time_at(ride.t[-1])
-        lats, lons = wind.lattice_for_track(ride.lat, ride.lon)
         days = wind.days_covering(ride.start, end)
         t0 = (ride.start - timedelta(hours=1)).timestamp()
         t1 = (end + timedelta(hours=1)).timestamp()
-        measured = [m.between(t0, t1) for m in mf.values()]
+        ok = np.isfinite(ride.lat) & np.isfinite(ride.lon)
+        tlat, tlon = ride.lat[ok][::30], ride.lon[ok][::30]
+
+        def near(la, lo):
+            return haversine_m(tlat, tlon, la, lo).min() <= args.near_km * 1000
+
+        measured = [m.between(t0, t1) for m in mf.values() if near(m.lat, m.lon)]
         for icao, la, lo in airports:
-            text = stations.fetch_text(stations.iem_metar_url(icao, ride.start - timedelta(hours=1),
-                                                              end + timedelta(days=1)))
-            measured.append(stations.read_iem_metar(text, la, lo).between(t0, t1))
+            if near(la, lo):
+                text = stations.fetch_text(stations.iem_metar_url(icao, ride.start - timedelta(hours=1),
+                                                                  end + timedelta(days=1)))
+                measured.append(stations.read_iem_metar(text, la, lo).between(t0, t1))
+        measured = [m for m in measured if m.times.size]
+        lats, lons = wind.lattice(min(tlat.min(), *(m.lat for m in measured)) if measured else tlat.min(),
+                                  max(tlat.max(), *(m.lat for m in measured)) if measured else tlat.max(),
+                                  min(tlon.min(), *(m.lon for m in measured)) if measured else tlon.min(),
+                                  max(tlon.max(), *(m.lon for m in measured)) if measured else tlon.max())
         for model in models:
             field = wind.load_field(lats, lons, days, model=model, cache_dir=args.cache)
-            inside = [m for m in measured if m.times.size and field.covers(m.lat, m.lon)]
+            inside = [m for m in measured if field.covers(m.lat, m.lon)]
             for m in inside:
                 p = pairs(field, m)
                 if p is None:
