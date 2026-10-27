@@ -12,6 +12,10 @@ The tabpfn Python package is licensed under the Apache License 2.0.
 
 FIT files are read with fitdecode (MIT License).
 
+The result pages embed the Chakra Petch typeface (Copyright 2018 The Chakra
+Petch Project Authors), under the SIL Open Font License 1.1. A copy of that
+license is in licenses/OFL-ChakraPetch.txt.
+
 Some modules started from z2analyzer by the same author
 (https://github.com/dsiacci/z2analyzer, Apache License 2.0): reading FIT
 files and distances along a track.

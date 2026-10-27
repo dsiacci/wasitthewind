@@ -27,7 +27,7 @@ wasitthewind = "wasitthewind.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-wasitthewind = ["py.typed"]
+wasitthewind = ["py.typed", "static/fonts/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
