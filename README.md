@@ -10,8 +10,8 @@ stretches where the wind weighed most, and compares the ride with an earlier
 one on the same road.
 
 It is a small web app you run on your own machine: open it, start a new
-analysis, drop the FIT file of your bike computer, and the race comes a minute
-later. Every analysis stays in the list. A command line does the same for
+analysis, drop the FIT file of your bike computer, and the race comes a few
+minutes later. Every analysis stays in the list. A command line does the same for
 scripts.
 
 It looks back at a ride already ridden. It does not plan routes, pick a start

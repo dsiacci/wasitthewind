@@ -1,4 +1,4 @@
-"""The web app: drop a ride, race its ghost a minute later, find every earlier race.
+"""The web app: drop a ride, race its ghost a few minutes later, find every earlier race.
 
     wasitthewind serve --data ~/wasitthewind [--library prepared/] [--mass-kg 70]
     # then open http://127.0.0.1:8766/
@@ -349,7 +349,7 @@ def progress_page(meta: dict) -> str:
     k = int(meta.get("step", 0))
     items = "".join(f'<li class="{"done" if i < k else "now" if i == k else ""}">{e(s)}</li>' for i, s in enumerate(STEPS))
     head = short_hero(meta["file"], "Racing…", "Your ghost is warming up.")
-    body = (f'{head}<main class="wrap"><section class="card"><h2>About a minute</h2><ol class="steps">{items}</ol>'
+    body = (f'{head}<main class="wrap"><section class="card"><h2>A few minutes on a small CPU</h2><ol class="steps">{items}</ol>'
             f'<p class="note">This page follows the analysis and opens the race by itself.</p></section></main>')
     return document("wasitthewind · racing", body, refresh=True)
 
