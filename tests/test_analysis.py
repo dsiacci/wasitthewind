@@ -45,9 +45,9 @@ def test_judge_end_to_end(tmp_path):
                                           wind_models=[wind.DEFAULT_MODEL], fetch=north_wind_fetch(w))
         assert lat.size == rs.epoch.size
         series.append(rs)
-    v = analysis.judge(series[2], series, make=models.LinearModel, rider=DEMO, height_factor=0.5)
+    v = analysis.judge(series[2], series, make=models.LinearModel, rider=DEMO, height_factors=[0.5])
     # An out-and-back into a wind costs time; the physics knows it for sure.
-    assert v.variants[f"physics, {wind.DEFAULT_MODEL}"] > 0
+    assert v.variants[f"physics ×0.50, {wind.DEFAULT_MODEL}"] > 0
     lo, hi = v.range_s
     assert lo <= v.gap_s <= hi
     assert v.headline.rider_total_s > 700

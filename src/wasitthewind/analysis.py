@@ -4,8 +4,11 @@
     ghost     the series and the rider's other rides → the ghost, its gap and its range
 
 The range comes from what we don't know: which weather model is right
-(AROME or IFS) and which speed model is right (TabPFN, or the physics when
-the rider's mass is given). The headline is AROME with TabPFN.
+(AROME or IFS), which speed model is right (TabPFN, or the physics when the
+rider's mass is given), and, for the physics, how much of the 10 m wind
+reaches a rider 1.2 m above the road: 0.54 of it over farmland with hedges
+(roughness 0.1 m), 0.29 over maquis and villages (0.5 m). The headline is
+AROME with TabPFN.
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ from .fitfile import Ride, read_fit
 from .ride import RideSeries, chunks, positions, series
 
 HEADLINE_MODEL = wind.DEFAULT_MODEL
+ROUGHNESS_M = (0.1, 0.5)
 
 
 def fields_for(ride: Ride, cache_dir, wind_models=tuple(wind.MODELS), fetch=None) -> list[wind.WindField]:
@@ -86,7 +90,7 @@ def physics_speeds(chunk: dict, rider, wind_model: str, factor: float, rho=None)
     return speed_at_power(p, g, rider, w, r), speed_at_power(p, g, rider, 0.0, r)
 
 
-def judge(rs: RideSeries, context: list[RideSeries], make=None, rider=None, height_factor: float | None = None,
+def judge(rs: RideSeries, context: list[RideSeries], make=None, rider=None, height_factors=None,
           extra_variants: bool = True) -> Verdict:
     """The ghost of `rs` learned from `context` (the rider's other rides), with its range."""
     if not context:
@@ -104,8 +108,9 @@ def judge(rs: RideSeries, context: list[RideSeries], make=None, rider=None, heig
                 a, b = tabpfn_speeds(ch, ctx, m, make)
                 v.variants[f"TabPFN, {m}"] = ghostmod.replay(ch, a, b, m).gap_s
         if rider is not None:
-            k = wind.rider_height_factor() if height_factor is None else height_factor
+            factors = height_factors or [wind.rider_height_factor(z0_m=z) for z in ROUGHNESS_M]
             for m in rs.models:
-                a, b = physics_speeds(ch, rider, m, k)
-                v.variants[f"physics, {m}"] = ghostmod.replay(ch, a, b, m).gap_s
+                for k in factors:
+                    a, b = physics_speeds(ch, rider, m, k)
+                    v.variants[f"physics ×{k:.2f}, {m}"] = ghostmod.replay(ch, a, b, m).gap_s
     return v

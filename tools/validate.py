@@ -31,11 +31,19 @@ from wasitthewind.analysis import tabpfn_speeds  # noqa: E402
 from wasitthewind.ride import RideSeries, chunks  # noqa: E402
 
 
+def _on_rows(c, v):
+    """Predicted speeds back on every chunk (NaN where the ghost rides like the rider)."""
+    out = np.full(len(c["full"]), np.nan)
+    out[ghostmod.ghost_rows(c)] = v
+    return [None if not np.isfinite(x) else round(float(x), 4) for x in out]
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("series", type=Path)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--quick", action="store_true", help="linear models only (no TabPFN), to test the plumbing")
+    ap.add_argument("--skip-loo", action="store_true", help="only the ghosts")
     args = ap.parse_args(argv)
 
     rides = [RideSeries.load(p) for p in sorted(args.series.glob("*.npz")) if not p.name.endswith(".track.npz")]
@@ -43,7 +51,7 @@ def main(argv=None) -> int:
     out: dict = {"rides": {}, "loo": {}}
     tab = (lambda X, y: models.TabPFNModel(X, y)) if not args.quick else models.LinearModel
 
-    for wm in wind.MODELS:
+    for wm in ([] if args.skip_loo else wind.MODELS):
         table = models.speed_table(list(ch.values()), wm, 1.0)
         factories = {
             "TabPFN, wind": tab,
@@ -76,6 +84,7 @@ def main(argv=None) -> int:
                 "mean_wind10": float(np.average(c[f"speed10__{wm}"], weights=g.rider_s)),
                 "worst": [s.__dict__ for s in worst], "best": [s.__dict__ for s in best],
                 "per_chunk_ghost_s": g.ghost_s.round(3).tolist(),
+                "per_chunk_v_wind": _on_rows(c, vw), "per_chunk_v_calm": _on_rows(c, vc),
             }
             print(f"{r.name} {wm:28s} gap {g.gap_s:+6.0f} s ({g.gap_pct:+.1f} %)  wind {entry['ghost'][wm]['mean_wind10']:.1f} m/s",
                   flush=True)
