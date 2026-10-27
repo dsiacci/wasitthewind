@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wasitthewind"
+version = "0.1.0"
+description = "Was it really the wind? Replays a ride with the wind taken out, at the same power, and races you against that ghost."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "licenses/*"]
+dependencies = [
+  "numpy>=1.24",
+  "fitdecode==0.10.0",
+]
+
+[project.optional-dependencies]
+# The speed model runs TabPFN v2 on the CPU.
+model = ["tabpfn>=9.1,<10"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+wasitthewind = "wasitthewind.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+wasitthewind = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

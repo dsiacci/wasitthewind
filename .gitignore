@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+# Rides, routes and anything derived from them stay on the rider's machine.
+*.fit
+*.FIT
+*.gpx
+*.GPX
+*.tcx
+private/
+out/
+.cache/
+# Downloaded weather (model grids, station files, METAR) is cached locally.
+weather-cache/
+*.csv.gz
