@@ -36,7 +36,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     wm, F = args.model, list(models.SPEED_FEATURES)
-    rides = [RideSeries.load(p) for p in sorted(args.series.glob("*.npz")) if not p.name.endswith(".track.npz")]
+    rides = sorted((RideSeries.load(p) for p in args.series.glob("*.npz") if not p.name.endswith(".track.npz")),
+                   key=lambda r: r.start_epoch)  # by date, as the app does
     ch = {r.name: chunks(r) for r in rides}
     res = {}
     for r in rides:

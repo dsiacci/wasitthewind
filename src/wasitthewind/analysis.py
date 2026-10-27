@@ -129,7 +129,9 @@ def judge(rs: RideSeries, context: list[RideSeries], make=None, rider=None, heig
     if not context:
         raise ValueError("the ghost needs at least one other ride to learn the rider from")
     ch = chunks(rs)
-    ctx = [chunks(c) for c in context if c.name != rs.name]
+    # by date: TabPFN's answer moves by a few seconds with the order of its rows,
+    # and the same rides should always give the same ghost
+    ctx = [chunks(c) for c in sorted(context, key=lambda c: c.start_epoch) if c.name != rs.name]
     vw, vc = tabpfn_speeds(ch, ctx, HEADLINE_MODEL, make)
     head = ghostmod.replay(ch, vw, vc, HEADLINE_MODEL)
     v = Verdict(ride=rs.name, start_epoch=rs.start_epoch, headline=head,

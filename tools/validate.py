@@ -51,7 +51,8 @@ def main(argv=None) -> int:
     ap.add_argument("--only", nargs="+", metavar="NAME", help='leave one ride out for these models only, e.g. "TabPFN, wind"')
     args = ap.parse_args(argv)
 
-    rides = [RideSeries.load(p) for p in sorted(args.series.glob("*.npz")) if not p.name.endswith(".track.npz")]
+    rides = sorted((RideSeries.load(p) for p in args.series.glob("*.npz") if not p.name.endswith(".track.npz")),
+                   key=lambda r: r.start_epoch)  # by date, as the app does
     ch = {r.name: chunks(r) for r in rides}
     out: dict = {"rides": {}, "loo": {}}
     tab = (lambda X, y: models.TabPFNModel(X, y)) if not args.quick else models.LinearModel

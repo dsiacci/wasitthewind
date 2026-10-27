@@ -198,6 +198,12 @@ physics see nothing: IFS gets the direction wrong by 48° on average
 (section 1), and a wrong direction turns a headwind into a tailwind. They
 stay in the range; the headline is AROME.
 
+TabPFN's answer also moves a little with the order of its context rows: on
+27 September, the same nine rides given in date order, in reverse and
+shuffled put the ghost 34.6, 38.5 and 40.3 seconds ahead. The app and the
+tools give the other rides in date order, so the same rides always give the
+same ghost; a wobble of a few seconds is well inside every range above.
+
 ## 5. Did TabPFN earn its place?
 
 - **As a model of the rider: yes.** On rides it never saw, it predicts the

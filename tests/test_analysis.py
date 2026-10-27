@@ -80,3 +80,19 @@ def test_ghost_ignores_what_the_wind_says_about_the_day(tmp_path):
     # One that learned the headwind slows the rider does: into the wind on the way out, the ghost wins.
     v = analysis.judge(series[1], series, make=_Speed(odd=0.3, even=0.0), extra_variants=False)
     assert v.gap_s > 10
+
+
+def test_the_ghost_does_not_depend_on_the_order_of_the_other_rides(tmp_path):
+    for day, w in ((10, 0.0), (11, 3.0), (12, 6.0)):
+        out_and_back(tmp_path / f"r{day}.fit", day, w)
+    series = [analysis.prepare(tmp_path / f"r{d}.fit", tmp_path / "cache", wind_models=[wind.DEFAULT_MODEL],
+                               fetch=north_wind_fetch(w))[0] for d, w in ((10, 0.0), (11, 3.0), (12, 6.0))]
+    seen = []
+
+    def make(X, y):
+        seen.append(X.copy())
+        return models.LinearModel(X, y)
+
+    analysis.judge(series[2], series[:2], make=make, extra_variants=False)
+    analysis.judge(series[2], series[1::-1], make=make, extra_variants=False)
+    assert np.array_equal(seen[0], seen[1])
