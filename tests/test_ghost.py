@@ -57,3 +57,12 @@ def test_stretches_do_not_overlap():
     assert len(s) == 2
     spans = sorted((x.first, x.last) for x in s)
     assert spans[0][1] < spans[1][0]
+
+
+def test_time_lost_with_the_wind_at_the_back_is_not_a_stretch():
+    head = np.r_[np.full(5, -3.0), np.zeros(5), np.full(5, 3.0), np.zeros(5)]
+    c = chunk(head=head)
+    v_wind = np.where(head != 0, 7.0, 8.0)  # slower in the wind, at the back too: the model's noise
+    g = replay(c, v_wind, np.full(20, 8.0), M)
+    s = stretches(g, n=3)
+    assert len(s) == 1 and s[0].head10_ms > 0

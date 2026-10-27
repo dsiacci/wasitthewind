@@ -100,7 +100,9 @@ def stretches(g: Ghost, n: int = 3, worst: bool = True, min_length_m: float = MI
     A stretch is a run of consecutive chunks where the wind cost (or gave)
     more than `min_rate` of the rider's time; a single calm chunk between two
     windy ones doesn't cut it. Runs shorter than `min_length_m` are dropped,
-    the others ranked by the time lost (or gained).
+    and so are runs where the wind blew the wrong way for what the model says
+    (time lost with the wind at the back is the model's noise, not the wind's
+    doing); the others are ranked by the time lost (or gained).
     """
     loss = (g.rider_s - g.ghost_s) * (1 if worst else -1)
     rate = loss / np.maximum(g.rider_s, 1e-9)
@@ -120,7 +122,9 @@ def stretches(g: Ghost, n: int = 3, worst: bool = True, min_length_m: float = MI
             j += 1
         length = d0[j + 1] - d0[i]
         total = loss[i:j + 1].sum()
-        if length >= min_length_m and total > 0:
+        w = np.maximum(g.rider_s[i:j + 1], 1e-9)
+        head = float(np.average(g.head10[i:j + 1], weights=w))
+        if length >= min_length_m and total > 0 and (head > 0 if worst else head < 0):
             runs.append((total, i, j))
         i = j + 1
     out = []

@@ -157,7 +157,10 @@ def verdict_words(gap_s: float, lo_s: float, hi_s: float, ride_s: float) -> tupl
     """(kind, headline html, one sentence) for a gap and its range."""
     small = max(30.0, 0.005 * ride_s)
     if abs(gap_s) < small and lo_s < small and hi_s > -small:
-        return "calm", "It wasn't the wind", (f"Your ghost, same legs and no wind, finishes within {mmss(small)} of you: "
+        where = ("level with you" if abs(gap_s) < 1 else
+                 f"{mmss(abs(gap_s))} {'ahead of' if gap_s > 0 else 'behind'} you")
+        return "calm", "It wasn't the wind", (f"Your ghost, same legs and no wind, finishes {where}, and every other "
+                                              f"way of counting within {mmss(max(abs(lo_s), abs(hi_s)))}: "
                                               "the wind barely touched this ride.")
     if gap_s > 0:
         sure = "" if lo_s > 0 else " The range crosses zero, so take it as a lean, not a verdict."
@@ -342,11 +345,11 @@ def result_page(v, rs, lat, lon, felt_factor: float, title: str | None = None, c
     sec = np.flatnonzero(keep)[:: max(1, int(keep.sum() // 600))]
     band = wind_band(rs.dist[sec] / 1000, _smooth(head_felt_s, 60)[sec])
     race = race_map(lat, lon, rs.dist, (d_end, tr_end, tg_end), keep)
-    gap_ahead = "ahead" if v.gap_s > 0 else "behind"
+    gap_ahead = "ahead by" if v.gap_s > 0 else "behind by"
     hud = (f'<div class="hud"><div class="me">You<b>{hm(g.rider_total_s)}</b></div>'
            f'<div class="gh">Your ghost<b>{hm(g.ghost_total_s)}</b></div>'
            f'<div>Wind at 10 m<b>{kmh(v.mean_wind10)}</b></div>'
-           f'<div>Moving time, the ghost {gap_ahead}<b>{mmss(abs(v.gap_s))}</b></div></div>')
+           f'<div>Your ghost, {gap_ahead}<b>{mmss(abs(v.gap_s))}</b></div></div>')
     body = [f'<header class="hero"><div class="wrap"><div class="kicker">{e(title or "Ride")} · {e(when(v.start_epoch, tz))}</div>'
             f'<h1>{headline}</h1><p class="sub">{e(sentence)}</p>{hud}</div></header><main class="wrap">']
     body.append(f'<section class="card dark race"><h2>The race</h2>{race}'
