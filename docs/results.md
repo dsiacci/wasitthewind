@@ -116,8 +116,8 @@ a third too weak, is too faint to show here.
 ### The first ghost lied
 
 The first version asked TabPFN for each 30-second piece twice: with the wind
-of that moment, and with the wind set to zero. Its ghost beat the rider on
-**every ride**, by 1.5 to 8.6 %, as if the wind had always helped, the two
+of that moment, and with the wind set to zero. Its ghost finished behind the
+rider on **every ride**, by 1.5 to 8.6 %, as if the wind had always helped, the two
 calmest days included (0.4 and 0.6 m/s on average). The physics, given the
 same wind, said a few seconds either way on most rides.
 
@@ -149,7 +149,7 @@ as a share of the ghost's time; positive: the wind cost time):
 Zeroing the crosswind did most of the damage. Dropping the crosswind from the
 model was not enough: a headwind of zero still meant "calm day" (29 August:
 the rider had the wind slightly in the face on average, and the ghost still
-won). What worked is to never ask for a day without wind: the ghost now keeps
+finished behind). What worked is to never ask for a day without wind: the ghost now keeps
 the crosswind and takes the mean of two answers, with the headwind as it was
 and turned around. Whatever the model learned from the *strength* of the wind
 (the kind of day) is the same in both and cancels out; what is left is what

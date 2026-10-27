@@ -117,8 +117,9 @@ the back moved by minutes (1 to 6, depending on the line of the range).
   0.1 %.
 - TabPFN predicts the speed on rides it never saw with 40 % less error than
   a linear regression (0.69 against 1.21 m/s). Its **first ghost lied**: with
-  the wind set to zero, it beat the rider on every ride, because the model
-  had learned the kind of day from the wind. The ghost now turns the
+  the wind set to zero, it finished behind the rider on every ride, as if
+  the wind had always helped, because the model had learned the kind of day
+  from the wind. The ghost now turns the
   headwind around instead; it agrees with the physics on the loops, but its
   headwind effect is too faint on the flat roads ridden both ways, so the
   physics stays in the range.
