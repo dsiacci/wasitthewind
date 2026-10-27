@@ -29,12 +29,16 @@ checks that rebuilt wind against measuring stations (Météo-France) and airport
 reports (METAR) at the hours of your rides.
 
 **The ghost.** The ride is cut into 30-second pieces. A speed model learned
-from your other rides predicts each piece's speed twice: with the wind of that
-moment, and with none, at the same power, grade, temperature and time in the
-saddle. The ghost rides each piece in your time × (speed with the wind ÷ speed
-without). Stops are the same for both. The speed model is
-[TabPFN](https://github.com/PriorLabs/TabPFN) v2, a tabular foundation model
-that takes your rides as context and answers in one pass, with no training run.
+from your other rides predicts each piece's speed with the wind of that
+moment, at the same power, grade, temperature and time in the saddle, and
+again with the headwind turned around; the mean of the two is the speed with
+no wind. The ghost rides each piece in your time × (speed with the wind ÷
+speed without). Stops are the same for both. (Why not just set the wind to
+zero? Because the model then answers for a calm day, and calm days are other
+roads: see [the first ghost](docs/results.md#the-first-ghost-lied).) The
+speed model is [TabPFN](https://github.com/PriorLabs/TabPFN) v2, a tabular
+foundation model that takes your rides as context and answers in one pass,
+with no training run.
 
 **The range.** What is uncertain becomes lines of the range: the other weather
 model, and plain physics instead of TabPFN, with the share of the 10 m wind
@@ -98,7 +102,27 @@ Built with PriorLabs-TabPFN.
 
 ## Results
 
-Being written: see [docs/results.md](docs/results.md).
+On one rider's ten outdoor rides with a power meter (Corsica, August to
+October 2026, 24.7 hours), each judged with TabPFN learned from the nine
+others: **it wasn't the wind.** On every loop, the headline ghost finishes
+within 40 seconds of the rider; only the long one-way day with the wind at
+the back moved by minutes (1 to 7, depending on the line of the range).
+
+- The rebuilt wind (AROME) gets the direction within 25° but is a third too
+  weak against the stations; ECMWF IFS is worse.
+- On flat roads ridden both ways, the way into the wind is 3.6 % slower at
+  the same power and grade; with 0.54 of the 10 m wind taken out (the
+  textbook share for a rider 1.2 m above open country), the gap melts to
+  0.1 %.
+- TabPFN predicts the speed on rides it never saw with 40 % less error than
+  a linear regression (0.69 against 1.21 m/s). Its **first ghost lied**: with
+  the wind set to zero, it beat the rider on every ride, because the model
+  had learned the kind of day from the wind. The ghost now turns the
+  headwind around instead; it agrees with the physics on the loops, but its
+  headwind effect is too faint on the flat roads ridden both ways, so the
+  physics stays in the range.
+
+Every table, and what failed: [docs/results.md](docs/results.md).
 
 ## Limits
 
@@ -110,7 +134,9 @@ Being written: see [docs/results.md](docs/results.md).
 - Drafting behind another rider looks like a tailwind to no one: the tool does
   not know you were sheltered.
 - The ghost knows you only through your rides: outside their conditions
-  (stronger wind, steeper grade, longer ride) it is less sure.
+  (stronger wind, steeper grade, longer ride) it is less sure. On rides in
+  light wind, as here, TabPFN learns a faint headwind effect: the physics
+  lines of the range matter.
 
 ## License
 
