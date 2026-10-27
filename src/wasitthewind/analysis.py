@@ -66,16 +66,22 @@ class Verdict:
 
 
 def tabpfn_speeds(chunk: dict, context: list[dict], wind_model: str, make=None, factor: float = 1.0):
-    """Predicted speeds of the ghost rows, with the wind and with none, from the other rides as context."""
+    """Predicted speeds of the ghost rows, with the wind and with none, from the other rides as context.
+
+    With none: the mean of the speeds with the headwind as it was and turned
+    around (see `models`), so the even part of the model's answer to the wind,
+    which also tells windy days from calm ones, cancels out.
+    """
     make = make or (lambda X, y: models.TabPFNModel(X, y))
     table = models.speed_table(context, wind_model, factor)
     m = make(table["X"], table["y"])
     rows = ghostmod.ghost_rows(chunk)
     sub = {k: (v[rows] if isinstance(v, np.ndarray) and v.shape[:1] == rows.shape else v) for k, v in chunk.items()}
     xw = models.features(sub, wind_model, factor)
-    xc = models.features(sub, wind_model, factor, calm=True)
-    both = models.median(m, np.vstack([xw, xc]))
-    return both[: len(xw)], both[len(xw):]
+    xt = models.features(sub, wind_model, factor, turned=True)
+    both = models.median(m, np.vstack([xw, xt]))
+    vw, vt = both[: len(xw)], both[len(xw):]
+    return vw, 0.5 * (vw + vt)
 
 
 def physics_speeds(chunk: dict, rider, wind_model: str, factor: float, rho=None):

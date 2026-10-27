@@ -52,3 +52,31 @@ def test_judge_end_to_end(tmp_path):
     assert lo <= v.gap_s <= hi
     assert v.headline.rider_total_s > 700
     assert v.mean_wind10 == pytest.approx(6.0, abs=0.01)
+
+
+class _Speed:
+    """A fake speed model: 8 m/s, plus `odd` per m/s of tailwind and `even` per m/s of wind either way."""
+
+    def __init__(self, odd, even):
+        self.odd, self.even = odd, even
+
+    def __call__(self, X, y):
+        return self
+
+    def quantiles(self, X, qs=models.QUANTILES):
+        h = np.asarray(X)[:, models.SPEED_FEATURES.index("head")]
+        v = 8.0 - self.odd * h + self.even * np.abs(h)
+        return np.tile(v[:, None], (1, len(qs)))
+
+
+def test_ghost_ignores_what_the_wind_says_about_the_day(tmp_path):
+    # A model that only learned "windy days are fast days" must not move the ghost.
+    for day, w in ((10, 0.0), (12, 6.0)):
+        out_and_back(tmp_path / f"r{day}.fit", day, w)
+    series = [analysis.prepare(tmp_path / f"r{d}.fit", tmp_path / "cache", wind_models=[wind.DEFAULT_MODEL],
+                               fetch=north_wind_fetch(w))[0] for d, w in ((10, 0.0), (12, 6.0))]
+    v = analysis.judge(series[1], series, make=_Speed(odd=0.0, even=0.3), extra_variants=False)
+    assert v.gap_s == pytest.approx(0.0, abs=1.0)
+    # One that learned the headwind slows the rider does: into the wind on the way out, the ghost wins.
+    v = analysis.judge(series[1], series, make=_Speed(odd=0.3, even=0.0), extra_variants=False)
+    assert v.gap_s > 10

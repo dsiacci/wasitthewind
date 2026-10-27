@@ -44,6 +44,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--quick", action="store_true", help="linear models only (no TabPFN), to test the plumbing")
     ap.add_argument("--skip-loo", action="store_true", help="only the ghosts")
+    ap.add_argument("--only", nargs="+", metavar="NAME", help='leave one ride out for these models only, e.g. "TabPFN, wind"')
     args = ap.parse_args(argv)
 
     rides = [RideSeries.load(p) for p in sorted(args.series.glob("*.npz")) if not p.name.endswith(".track.npz")]
@@ -60,6 +61,8 @@ def main(argv=None) -> int:
             "linear, no wind": models.without_wind(models.LinearModel),
             "constant": models.ConstantModel,
         }
+        if args.only:
+            factories = {k: v for k, v in factories.items() if k in args.only}
         t0 = time.time()
         res = models.leave_one_ride_out(table, factories)
         out["loo"][wm] = {name: {"all": r.get("all"), "per_ride": r["per_ride"]} for name, r in res.items()}

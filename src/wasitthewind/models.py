@@ -7,8 +7,18 @@ Labs License 1.1. Built with PriorLabs-TabPFN.
 
 One table (see `ride.py`): 30-second chunks of the rider's other rides, with
 power, grade, headwind and crosswind at rider height, temperature and minutes
-ridden; the target is the mean speed. The ghost is the same chunk predicted
-with the wind set to zero.
+ridden; the target is the mean speed.
+
+The ghost's speed is not the chunk predicted with the wind set to zero. A
+first version did that, and the ghost came out slower than the rider on every
+ride, as if the wind had always helped, calm days included (docs/results.md).
+The model had learned the kind of day from the wind: a strong crosswind meant
+a windy day on the coast road, where the rider goes fast; no wind at all
+meant a calm day inland, on slower roads. Setting the wind to zero moved the
+ride inland. So the ghost keeps the crosswind and asks the model twice, with
+the headwind as it was and turned around (a tailwind of the same strength),
+and takes the mean of the two: what the wind did by blowing one way rather
+than the other, with the kind of day left as it was.
 
 Started from z2analyzer (same author, Apache 2.0): https://github.com/dsiacci/z2analyzer
 """
@@ -123,11 +133,11 @@ def speed_table(all_chunks: list[dict], model: str, factor: float) -> dict:
             "features": np.array(SPEED_FEATURES)}
 
 
-def features(chunk: dict, model: str, factor: float, calm: bool = False) -> np.ndarray:
-    """Feature rows of one ride's chunks; with `calm`, the wind columns are zero (the ghost)."""
-    w = 0.0 if calm else factor
-    cols = {"power": chunk["power"], "grade": chunk["grade"], "head": w * chunk[f"head10__{model}"],
-            "cross": w * chunk[f"cross10__{model}"], "temp": chunk["temp"], "elapsed_min": chunk["elapsed_min"]}
+def features(chunk: dict, model: str, factor: float, turned: bool = False) -> np.ndarray:
+    """Feature rows of one ride's chunks; with `turned`, the headwind blows the other way."""
+    head = (-factor if turned else factor) * chunk[f"head10__{model}"]
+    cols = {"power": chunk["power"], "grade": chunk["grade"], "head": head,
+            "cross": factor * chunk[f"cross10__{model}"], "temp": chunk["temp"], "elapsed_min": chunk["elapsed_min"]}
     return np.column_stack([cols[f] for f in SPEED_FEATURES]).astype(np.float32)
 
 
