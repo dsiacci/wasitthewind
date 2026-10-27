@@ -1,0 +1,39 @@
+{
+ "cards": {
+  "title": {"line": "Was it really the wind?", "sub": "Race your ghost: the same ride, the same power, no wind."},
+  "proof": {"title": "The first ghost lied",
+            "lead": "Each way of taking the wind out, against plain physics: points of the ride's time, mean of 10 rides",
+            "rows": [["All of it set to zero: the first ghost", 4.2, "lose"],
+                     ["Crosswind set to zero", 3.5, "lose"],
+                     ["Headwind set to zero", 1.0, "lose"],
+                     ["Headwind turned around: the ghost now", 0.3, "win"]],
+            "note": "With no wind at all, TabPFN answered for a calm day inland: the wind had told it what kind of day it was."},
+  "outro": {"lines": ["Open source, Apache 2.0 · github.com/dsiacci/wasitthewind",
+                      "Built with PriorLabs-TabPFN",
+                      "Wind: Open-Meteo · Météo-France AROME · ECMWF IFS",
+                      "Voice: ElevenLabs"]}
+ },
+ "scenes": [
+  {"id": "intro", "shot": "card:title", "min": 4.5,
+   "say": "After a slow ride, the wind is the easy excuse. Was it really the wind?"},
+  {"id": "home", "shot": "page:home:list", "min": 5,
+   "say": "wasitthewind is a small web app I host myself. Every ride I drop stays in the list."},
+  {"id": "new", "shot": "page:new:drop", "file": "2026-09-27.fit", "compare": "Sun 13 Sep", "min": 5,
+   "say": "After a ride, I drop the FIT file from my bike computer, and pick an earlier ride on the same loop."},
+  {"id": "progress", "shot": "page:progress", "min": 2.5, "say": ""},
+  {"id": "race", "shot": "race:a:race", "min": 9,
+   "say": "The blue dot is my ghost: me on the same road, at the same power, with the wind taken out. TabPFN learned my legs from my other rides."},
+  {"id": "verdict", "shot": "page:a:verdict", "min": 6,
+   "say": "Thirty-five seconds in three hours. Another weather model and plain physics agree: it wasn't the wind."},
+  {"id": "compare", "shot": "page:a:compare", "min": 6,
+   "say": "Against the thirteenth of September on the same loop: sixteen minutes faster, and the wind cost me more, not less."},
+  {"id": "north", "shot": "race:b:race", "min": 8,
+   "say": "It counted once: a long one-way day in the north, with the wind at my back."},
+  {"id": "north-verdict", "shot": "page:b:verdict", "min": 5,
+   "say": "It gave me three and a half minutes, somewhere between one and six."},
+  {"id": "proof", "shot": "card:proof", "min": 8,
+   "say": "My first ghost lied. With the wind set to zero, TabPFN answered for a calm day inland. Turning the headwind around fixed it."},
+  {"id": "outro", "shot": "card:outro", "min": 5,
+   "say": "Open weights and open weather data, on my own machine."}
+ ]
+}

@@ -75,6 +75,9 @@ Outputs are minutes, seconds, percentages and wind speeds. No watts: a power,
 a speed and a grade on the same stretch are enough to work out the rider's
 mass.
 
+`tools/demo.py` films the demo video from the app's own pages (headless
+Chromium and ffmpeg); its scenes and words are in `tools/demo/scenes.json`.
+
 ## What leaves your machine
 
 - **No ride file and no track.** FIT files are read locally; prepared rides
