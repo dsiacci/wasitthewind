@@ -8,7 +8,7 @@ covers the chunk in the rider's own time scaled by the ratio of the two:
 
 so the rider's own good or bad day stays in, and only the wind comes out.
 Chunks with a stop are ridden by the ghost exactly as by the rider: a red
-light doesn't care about the wind. Everything is in moving time.
+light doesn't care about the wind, and both clocks run through the stops.
 
 `gap_s` is the rider's time minus the ghost's: positive, the wind cost time;
 negative, it gave some.
@@ -28,7 +28,7 @@ class Ghost:
     ride: str
     start_s: np.ndarray  # chunk start, seconds since the ride's first record
     dist_m: np.ndarray  # distance covered in each chunk
-    rider_s: np.ndarray  # seconds the rider spent moving in the chunk
+    rider_s: np.ndarray  # seconds the rider spent on the chunk, stops included
     ghost_s: np.ndarray  # seconds the ghost needs for the same chunk
     head10: np.ndarray  # mean headwind at 10 m (m/s), for the stretches
     speed10: np.ndarray  # mean wind speed at 10 m

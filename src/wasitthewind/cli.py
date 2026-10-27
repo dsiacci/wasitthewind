@@ -83,7 +83,7 @@ def cmd_ghost(args) -> int:
     lo, hi = v.range_s
     g = v.headline
     _, headline, sentence = page.verdict_words(v.gap_s, lo, hi, g.rider_total_s)
-    print(f"{page.when(v.start_epoch, tz)} · {page.hm(g.rider_total_s)} moving · ghost {page.hm(g.ghost_total_s)}")
+    print(f"{page.when(v.start_epoch, tz)} · you {page.hm(g.rider_total_s)} · ghost {page.hm(g.ghost_total_s)}")
     print(f"{headline}. {sentence}")
     for i, s in enumerate(v.worst, 1):
         print(f"  {i}. km {page.km(s.start_m)} → {page.km(s.start_m + s.length_m)}: {page.mmss(s.lost_s)} lost, "
