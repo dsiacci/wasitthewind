@@ -91,6 +91,7 @@ APP_CSS = """
 .about form { margin-left:auto; }
 .chip { font:600 13.5px/1.25 var(--hud); padding:7px 12px 6px; border-radius:10px; background:var(--soft); border:1px solid var(--line); }
 .error { font:600 17px/1.4 var(--body); }
+@media (max-width:520px) { .appbar .btn.quiet { display:none; } .appbar .brand { font-size:19px; } }
 """
 
 FOOTER = ("<footer><b>wasitthewind</b>Runs on this machine: the rides you drop stay in its data folder; only the wind "
@@ -323,7 +324,7 @@ def home_page(store: Store, settings: Settings) -> str:
     if not items:
         body = '<section class="card"><p class="note">No race yet. Each ride you add also teaches the ghost how you ride.</p></section>'
     else:
-        body = f'<section><h2>Your races</h2><ul class="tiles">{"".join(tile(m, settings) for m in items)}</ul></section>'
+        body = f'<section aria-label="Your races"><ul class="tiles">{"".join(tile(m, settings) for m in items)}</ul></section>'
     return document("wasitthewind", f'{head}<main class="wrap">{body}</main>')
 
 
