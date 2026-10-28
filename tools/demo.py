@@ -107,16 +107,16 @@ VIEWS = {
     "verdict": ".hero { padding:26px 0 46px; } .hero .wrap { max-width:1180px; } .hero h1 { font-size:60px; margin:.12em 0 .14em; }"
                " .hero .sub { font-size:19px; max-width:52em; } .hud { margin-top:12px; } .hud b { font-size:30px; }"
                " main > section:not(.how) { display:none !important; } main { margin-top:-24px !important; zoom:.84; }",
-    # The race: the headline on the left, the map on the right, the dots larger; the ghost a wide halo
-    # under the rider's dot, so that it shows even when it is only a few seconds away.
+    # The race: the headline on the left, the map on the right, its legend clear of the captions, the dots
+    # larger; the ghost a wide halo under the rider's dot, so that it shows even when it is only a few seconds away.
     "race": "html, body { background:var(--night) !important; } .appbar, .hero .sub, .hero .kicker, main > section:not(.race),"
             " .about, footer, .race .note { display:none !important; }"
             " .hero { position:fixed; left:0; top:0; bottom:0; width:520px; padding:96px 0 0 !important; background:none !important; }"
             " .hero::after { display:none; } .hero .wrap { padding:0 0 0 56px !important; max-width:none; }"
             " .hero h1 { font-size:48px; } .hud { display:grid; grid-template-columns:1fr; gap:22px; }"
             " main.wrap { margin:0 0 0 520px !important; padding:24px 40px 24px 0 !important; max-width:none !important; }"
-            " .race { margin:0 !important; height:672px; box-sizing:border-box; display:grid; grid-template-rows:auto 1fr auto; }"
-            " .race svg { height:560px !important; width:100% !important; }"
+            " .race { margin:0 !important; height:600px; box-sizing:border-box; display:grid; grid-template-rows:auto 1fr auto; }"
+            " .race svg { height:490px !important; width:100% !important; }"
             " .race svg > g:nth-of-type(1) circle:nth-child(1) { r:26px; opacity:.6; }"
             " .race svg > g:nth-of-type(1) circle:nth-child(2) { r:16px; opacity:1; }"
             " .race svg > g:nth-of-type(2) circle { r:9px; }",
