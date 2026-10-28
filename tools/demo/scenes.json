@@ -2,9 +2,9 @@
  "cards": {
   "title": {"line": "Was it really the wind?", "sub": "Race your ghost: the same ride, the same power, no wind."},
   "how": {"kick": "What it does, after a ride",
-          "steps": [["The wind along the ride", "Rebuilt second by second from weather models: headwind and crosswind at every point."],
+          "steps": [["The wind", "Rebuilt along the ride, second by second, from weather models: headwind and crosswind."],
                     ["Your ghost", "The same ride at the same power, with the wind taken out. Not an earlier ride: this one, replayed."],
-                    ["The gap at the finish", "What the wind cost you, or gave you, with a range."]]},
+                    ["The gap", "At the finish: what the wind cost you, or gave you, with a range."]]},
   "proof": {"title": "The first ghost lied",
             "lead": "Each way of taking the wind out, against plain physics: points of the ride's time, mean of 10 rides",
             "rows": [["All of it set to zero: the first ghost", 4.2, "lose"],

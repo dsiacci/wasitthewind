@@ -423,8 +423,7 @@ def _compare_card(c) -> str:
         share = f"This ride was <strong>{mmss(abs(diff))} {slower}</strong> than {label}"
         if pct < 0:
             more = "cost you" if wind_diff > 0 else "helped you"
-            share += (f", and the wind doesn't explain it: it {more} <strong>{mmss(abs(wind_diff))}</strong> more "
-                      f"on this ride than on {label}.")
+            share += f", and the wind doesn't explain it: it {more} <strong>{mmss(abs(wind_diff))}</strong> more on this ride."
         else:
             share += (f"; the wind accounts for <strong>{mmss(abs(wind_diff))}</strong> of that difference "
                       f"({'about ' + str(int(round(pct))) + ' %' if pct <= 150 else 'more than all of it'}).")

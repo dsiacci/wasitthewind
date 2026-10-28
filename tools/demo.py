@@ -82,8 +82,8 @@ HOW_ART = [
     '<svg viewBox="0 0 360 150"><path d="M8 110H352" stroke="rgba(233,237,245,.45)" stroke-width="4"/>'
     '<circle cx="250" cy="110" r="20" fill="var(--ghost)" opacity=".35"/><circle cx="250" cy="110" r="11" fill="var(--ghost)"/>'
     '<circle cx="190" cy="110" r="10" fill="var(--me)"/>'
-    '<text x="190" y="80" fill="var(--me)" text-anchor="middle" font-size="18" font-weight="700" font-family="var(--hud)">YOU</text>'
-    '<text x="250" y="72" fill="var(--ghost)" text-anchor="middle" font-size="18" font-weight="700" font-family="var(--hud)">'
+    '<text x="190" y="76" fill="var(--me)" text-anchor="middle" font-size="18" font-weight="700" font-family="var(--hud)">YOU</text>'
+    '<text x="250" y="76" fill="var(--ghost)" text-anchor="middle" font-size="18" font-weight="700" font-family="var(--hud)">'
     'GHOST</text></svg>',
     '<svg viewBox="0 0 360 150"><path d="M8 110H352" stroke="rgba(233,237,245,.45)" stroke-width="4"/>'
     '<path d="M300 40V130" stroke="#eef3ff" stroke-width="4" stroke-dasharray="8 6"/>'
