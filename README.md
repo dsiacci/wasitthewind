@@ -14,6 +14,8 @@ analysis, drop the FIT file of your bike computer, and the race comes a few
 minutes later. Every analysis stays in the list. A command line does the same for
 scripts.
 
+Demo video (88 s, on the author's own rides): https://youtu.be/Yp9h0NMVNS4
+
 It looks back at a ride already ridden. It does not plan routes, pick a start
 time or give training advice.
 
