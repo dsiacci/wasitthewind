@@ -60,7 +60,39 @@ html, body { height:100%; margin:0; } body { background:var(--night); color:#eef
 .board .row.win span, .board .row.win b { color:var(--ghost); } .board .row.win i { background:var(--ghost); box-shadow:0 0 14px var(--ghost); }
 .board .row.lose b { color:var(--face); } .board .row.lose i { background:var(--face); }
 .board p { font:500 21px/1.4 var(--hud); color:rgba(238,243,255,.6); margin:22px 0 0; }
+.how { width:1160px; text-align:left; }
+.how .kick { font:700 17px/1 var(--hud); letter-spacing:.18em; text-transform:uppercase; color:rgba(238,243,255,.6); margin:0 0 30px; }
+.how .steps { display:grid; grid-template-columns:repeat(3, 1fr); gap:44px; }
+.how .off { opacity:0; }
+.how svg { display:block; width:100%; height:150px; margin-bottom:22px; overflow:visible; }
+.how b { display:block; font:700 30px/1.05 var(--hud); text-transform:uppercase; }
+.how b i { font-style:normal; color:var(--ghost); }
+.how p { font:500 19px/1.4 var(--hud); color:rgba(238,243,255,.75); margin:12px 0 0; }
 """
+
+# The three pictures of the "how it works" card: the wind along a road, the ghost beside the rider,
+# the gap at the finish.
+HOW_ART = [
+    '<svg viewBox="0 0 360 150"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5"'
+    ' orient="auto"><path d="M0 0L10 5L0 10z" fill="#eef3ff"/></marker></defs>'
+    '<path d="M8 128C90 70 160 150 240 92S330 48 352 56" fill="none" stroke="rgba(233,237,245,.45)" stroke-width="4"/>'
+    + "".join(f'<path d="M{x} {y}l58 16" stroke="#eef3ff" stroke-width="3" stroke-linecap="round" marker-end="url(#ah)"'
+              f' opacity=".8"/>' for x, y in ((30, 24), (130, 8), (230, 22), (80, 70), (190, 54)))
+    + "</svg>",
+    '<svg viewBox="0 0 360 150"><path d="M8 110H352" stroke="rgba(233,237,245,.45)" stroke-width="4"/>'
+    '<circle cx="250" cy="110" r="20" fill="var(--ghost)" opacity=".35"/><circle cx="250" cy="110" r="11" fill="var(--ghost)"/>'
+    '<circle cx="190" cy="110" r="10" fill="var(--me)"/>'
+    '<text x="190" y="80" fill="var(--me)" text-anchor="middle" font-size="18" font-weight="700" font-family="var(--hud)">YOU</text>'
+    '<text x="250" y="72" fill="var(--ghost)" text-anchor="middle" font-size="18" font-weight="700" font-family="var(--hud)">'
+    'GHOST</text></svg>',
+    '<svg viewBox="0 0 360 150"><path d="M8 110H352" stroke="rgba(233,237,245,.45)" stroke-width="4"/>'
+    '<path d="M300 40V130" stroke="#eef3ff" stroke-width="4" stroke-dasharray="8 6"/>'
+    '<circle cx="292" cy="110" r="20" fill="var(--ghost)" opacity=".35"/><circle cx="292" cy="110" r="11" fill="var(--ghost)"/>'
+    '<circle cx="200" cy="110" r="10" fill="var(--me)"/>'
+    '<path d="M200 76V68H292V76" fill="none" stroke="#eef3ff" stroke-width="3"/>'
+    '<text x="246" y="56" fill="#eef3ff" text-anchor="middle" font-size="26" font-weight="700" font-family="var(--hud)">0:35</text>'
+    "</svg>",
+]
 
 # What each view puts on screen: CSS added to the app's own page.
 VIEWS = {
@@ -132,9 +164,15 @@ def doc(body: str) -> str:
             f"<body>{body}</body></html>")
 
 
-def card(kind: str, spec: dict) -> str:
+def card(kind: str, spec: dict, shown: int = 3) -> str:
+    """A card of the video; for "how", `shown` is how many of its steps are on screen."""
     e = html.escape
     road = '<div class="road"></div><div class="dot me"></div><div class="dot gh"></div>'
+    if kind == "how":
+        steps = "".join(f'<div class="{"" if k < shown else "off"}">{HOW_ART[k]}<b><i>{k + 1}</i> {e(t)}</b><p>{e(p)}</p></div>'
+                        for k, (t, p) in enumerate(spec["steps"]))
+        return doc(f'<div class="stage"><div class="how"><div class="kick">{e(spec["kick"])}</div>'
+                   f'<div class="steps">{steps}</div></div></div>')
     if kind == "title":
         return doc(f'<div class="stage">{road}<div class="brand">was<i>it</i>the<i>wind</i></div>'
                    f'<div class="line">{e(spec["line"])}</div><div class="subl">{e(spec["sub"])}</div></div>')
@@ -209,7 +247,7 @@ def record(a) -> int:
         d = max(sc["min"], LEAD + spoken + 0.9)
         page = shots / f"{sc['id']}.html"
         if kind == "card":
-            page.write_text(card(name, conf["cards"][name]), encoding="utf-8")
+            page.write_text(card(name, conf["cards"][name], *(int(x) for x in view)), encoding="utf-8")
         else:
             page.write_text(page_variant(app / f"{name}.html", view[0] if view else None, sc), encoding="utf-8")
         seg = shots / f"{sc['id']}.mp4"
@@ -227,12 +265,10 @@ def record(a) -> int:
         else:
             png = shots / f"{sc['id']}.png"
             shoot(page.resolve().as_uri(), png)
-            frames_n = int(round(d * FPS))
-            # a slow 4 % zoom on each still
-            run(["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-i", str(png), "-t", f"{d:.3f}",
-                 "-vf", f"scale={W * 2}:{H * 2},zoompan=z='1+0.04*on/{frames_n}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-                        f":d={frames_n}:s={W}x{H}:fps={FPS},format=yuv420p",
-                 "-r", str(FPS), "-c:v", "libx264", "-preset", "medium", "-crf", "18", str(seg)])
+            # the still held as it is: a slow zoom shook the text
+            run(["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-framerate", str(FPS), "-i", str(png), "-t", f"{d:.3f}",
+                 "-vf", f"scale={W}:{H},format=yuv420p", "-r", str(FPS), "-c:v", "libx264", "-preset", "medium",
+                 "-tune", "stillimage", "-crf", "18", str(seg)])
         plan.append({**sc, "seg": seg, "clip": clip, "spoken": spoken, "d": d})
         print(f"{sc['id']}: {d:.1f} s", flush=True)
 
