@@ -34,3 +34,17 @@ def test_verdict_words():
 
 def test_mmss():
     assert page.mmss(62) == "1:02" and page.mmss(-62, sign=True) == "−1:02" and page.mmss(3725) == "1:02:05"
+
+
+def test_compare_card_adds_up():
+    # faster, with the wind costing more on this ride: the wind doesn't explain it
+    card = page._compare_card({"label": "Sun 1 Mar", "this_s": 10620, "other_s": 11615,
+                               "this_gap_s": 35.2, "other_gap_s": 10.4})
+    assert "2:57:00" in card and "3:13:35" in card and "16:35 faster" in card
+    assert "the wind cost 0:35" in card and "the wind cost 0:10" in card
+    assert "doesn't explain it: it cost you <strong>0:25</strong> more" in card
+    # slower, with the wind costing most of the difference
+    card = page._compare_card({"label": "Sun 1 Mar", "this_s": 7300, "other_s": 7200,
+                               "this_gap_s": 60, "other_gap_s": -20})
+    assert "1:40 slower" in card and "<strong>1:20</strong> of that difference (about 80 %)" in card
+    assert "the wind gave 0:20" in card

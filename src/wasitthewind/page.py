@@ -352,8 +352,9 @@ def result_page(v, rs, lat, lon, felt_factor: float, title: str | None = None, c
     band = wind_band(rs.dist[sec] / 1000, _smooth(head_felt_s, 60)[sec])
     race = race_map(lat, lon, rs.dist, (d_end, tr_end, tg_end), keep)
     gap_ahead = "ahead by" if v.gap_s > 0 else "behind by"
-    hud = (f'<div class="hud"><div class="me">You<b>{hm(g.rider_total_s)}</b></div>'
-           f'<div class="gh">Your ghost<b>{hm(g.ghost_total_s)}</b></div>'
+    # to the second: a ghost a few seconds away would read as the same time in hours and minutes
+    hud = (f'<div class="hud"><div class="me">You<b>{mmss(g.rider_total_s)}</b></div>'
+           f'<div class="gh">Your ghost<b>{mmss(g.ghost_total_s)}</b></div>'
            f'<div>Wind at 10 m<b>{kmh(v.mean_wind10)}</b></div>'
            f'<div>Your ghost, {gap_ahead}<b>{mmss(abs(v.gap_s))}</b></div></div>')
     body = [f'<header class="hero"><div class="wrap"><div class="kicker">{e(title or "Ride")} · {e(when(v.start_epoch, tz))}</div>'
@@ -401,21 +402,35 @@ def _stretch_card(n, s, factor, gave: bool) -> str:
             f'<span class="cost"><b>{cost}</b><small>{lab}</small></span><span class="what">{e(what)}</span></li>')
 
 
+def _wind_did(gap_s: float) -> str:
+    if abs(gap_s) < 1:
+        return "the wind made no difference"
+    return f"the wind cost {mmss(gap_s)}" if gap_s > 0 else f"the wind gave {mmss(-gap_s)}"
+
+
 def _compare_card(c) -> str:
     """`c`: dict with label, this_s, other_s, this_gap_s, other_gap_s."""
-    diff = c["this_s"] - c["other_s"]
-    wind_diff = c["this_gap_s"] - c["other_gap_s"]
+    # on the rounded seconds, so that the sentence adds up with the numbers above it
+    this_gap, other_gap = round(c["this_gap_s"]), round(c["other_gap_s"])
+    diff = round(c["this_s"]) - round(c["other_s"])
+    wind_diff = this_gap - other_gap
+    label = e(c["label"])
     if abs(diff) < 1:
         share = "Both rides took the same time."
     else:
         pct = 100 * wind_diff / diff
         slower = "slower" if diff > 0 else "faster"
-        share = (f"This ride was <strong>{mmss(abs(diff))} {slower}</strong> than {e(c['label'])}; the wind accounts for "
-                 f"<strong>{mmss(abs(wind_diff))}</strong> of that difference "
-                 f"({'about ' + str(int(round(pct))) + ' %' if 0 <= pct <= 150 else 'in the other direction' if pct < 0 else 'more than all of it'}).")
-    return (f'<section class="card"><h2>Against {e(c["label"])}</h2><div class="compare">'
-            f'<div><span>This ride</span><b>{hm(c["this_s"])}</b>wind {mmss(c["this_gap_s"], sign=True)}</div>'
-            f'<div><span>{e(c["label"])}</span><b>{hm(c["other_s"])}</b>wind {mmss(c["other_gap_s"], sign=True)}</div>'
+        share = f"This ride was <strong>{mmss(abs(diff))} {slower}</strong> than {label}"
+        if pct < 0:
+            more = "cost you" if wind_diff > 0 else "helped you"
+            share += (f", and the wind doesn't explain it: it {more} <strong>{mmss(abs(wind_diff))}</strong> more "
+                      f"on this ride than on {label}.")
+        else:
+            share += (f"; the wind accounts for <strong>{mmss(abs(wind_diff))}</strong> of that difference "
+                      f"({'about ' + str(int(round(pct))) + ' %' if pct <= 150 else 'more than all of it'}).")
+    return (f'<section class="card"><h2>Against {label}</h2><div class="compare">'
+            f'<div><span>This ride</span><b>{mmss(c["this_s"])}</b>{_wind_did(this_gap)}</div>'
+            f'<div><span>{label}</span><b>{mmss(c["other_s"])}</b>{_wind_did(other_gap)}</div>'
             f'<p>{share}</p></div></section>')
 
 
