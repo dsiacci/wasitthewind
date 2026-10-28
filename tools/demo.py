@@ -31,7 +31,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-W, H, FPS, RACE_FPS, FADE, LEAD = 1920, 1080, 30, 15, 0.5, 0.35
+W, H, FPS, RACE_FPS, FADE, LEAD, TAIL = 1920, 1080, 30, 15, 0.5, 0.35, 0.6
 
 sys.path.insert(0, str(HERE.parent / "src"))
 from wasitthewind.page import CSS, RACE_S, fonts_css  # noqa: E402
@@ -244,7 +244,7 @@ def record(a) -> int:
         kind, name, *view = sc["shot"].split(":")
         clip = voice / f"{sc['id']}.mp3" if voice and (voice / f"{sc['id']}.mp3").exists() else None
         spoken = duration(clip) / a.tempo if clip else len(sc["say"]) / 15.0
-        d = max(sc["min"], LEAD + spoken + 0.9)
+        d = max(sc["min"], LEAD + spoken + TAIL)
         page = shots / f"{sc['id']}.html"
         if kind == "card":
             page.write_text(card(name, conf["cards"][name], *(int(x) for x in view)), encoding="utf-8")
